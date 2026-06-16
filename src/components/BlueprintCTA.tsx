@@ -80,9 +80,11 @@ export default function BlueprintCTA() {
 
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  // Static site (GitHub Pages) — no backend. Validate and confirm client-side.
-  // To capture for real, point this at a form service (Formspree/Resend) later.
-  const handleSubmit = (e: React.FormEvent) => {
+  // Set NEXT_PUBLIC_FORMSPREE_ENDPOINT (a Formspree form URL) to capture for real
+  // on the static site. If unset, the form just confirms client-side.
+  const FORMSPREE = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT;
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const value = email.trim();
 
@@ -92,8 +94,27 @@ export default function BlueprintCTA() {
       return;
     }
 
-    setStatus("success");
-    setEmail("");
+    if (!FORMSPREE) {
+      setStatus("success");
+      setEmail("");
+      return;
+    }
+
+    setStatus("loading");
+    setErrorMsg("");
+    try {
+      const res = await fetch(FORMSPREE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ email: value }),
+      });
+      if (!res.ok) throw new Error();
+      setStatus("success");
+      setEmail("");
+    } catch {
+      setStatus("error");
+      setErrorMsg("Couldn't subscribe right now. Please try again.");
+    }
   };
 
   return (

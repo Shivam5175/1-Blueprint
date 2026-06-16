@@ -29,6 +29,8 @@ jobs:
         env:
           GITHUB_PAGES: "true"
           NEXT_PUBLIC_SITE_URL: https://shivam5175.github.io/1-Blueprint
+          # Optional: set a repo variable FORMSPREE_ENDPOINT to enable real email capture.
+          NEXT_PUBLIC_FORMSPREE_ENDPOINT: ${{ vars.FORMSPREE_ENDPOINT }}
       - run: touch out/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
