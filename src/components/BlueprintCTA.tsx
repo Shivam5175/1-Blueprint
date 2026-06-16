@@ -80,7 +80,9 @@ export default function BlueprintCTA() {
 
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Static site (GitHub Pages) — no backend. Validate and confirm client-side.
+  // To capture for real, point this at a form service (Formspree/Resend) later.
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const value = email.trim();
 
@@ -90,29 +92,8 @@ export default function BlueprintCTA() {
       return;
     }
 
-    setStatus("loading");
-    setErrorMsg("");
-
-    try {
-      const res = await fetch("/api/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: value }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Something went wrong. Please try again.");
-      }
-
-      setStatus("success");
-      setEmail("");
-    } catch (err) {
-      setStatus("error");
-      setErrorMsg(
-        err instanceof Error ? err.message : "Something went wrong. Please try again."
-      );
-    }
+    setStatus("success");
+    setEmail("");
   };
 
   return (
